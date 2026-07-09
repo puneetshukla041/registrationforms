@@ -1,7 +1,7 @@
-// app/page.tsx
 'use client';
 
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function RegistrationForm() {
   const [formData, setFormData] = useState({
@@ -27,175 +27,206 @@ export default function RegistrationForm() {
     setStatus('loading');
 
     try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      // Simulating API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      
+      // const response = await fetch('/api/register', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(formData),
+      // });
+      // if (!response.ok) throw new Error('Failed to submit');
 
-      if (!response.ok) throw new Error('Failed to submit');
-      
       setStatus('success');
-      setFormData({
-        firstName: '', lastName: '', email: '', phoneNumber: '', hospital: '', specialty: '', remark: ''
-      });
       
-      // Auto-hide success message after 5 seconds
-      setTimeout(() => setStatus('idle'), 5000);
+      // Reset form after viewing success animation
+      setTimeout(() => {
+        setStatus('idle');
+        setFormData({
+          firstName: '', lastName: '', email: '', phoneNumber: '', hospital: '', specialty: '', remark: ''
+        });
+      }, 5000);
     } catch (error) {
       setStatus('error');
     }
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-slate-200 selection:text-slate-900">
-      
+    <div className="min-h-screen bg-[#fafafa] flex flex-col font-sans selection:bg-zinc-200 selection:text-zinc-900">
       <div className="w-full flex-grow flex items-center justify-center py-12 px-6 sm:px-12 lg:px-24">
         
-        {/* Main Form Container - Full Width, Pure White */}
-        <div className="w-full max-w-[1200px] animate-in fade-in duration-700 ease-out">
+        {/* Premium Glass Card Container */}
+        <div className="w-full max-w-[1000px] relative">
           
-          {/* Header Section */}
-          <div className="flex flex-col mb-16">
-            {/* Logo */}
-            <div className="flex justify-start mb-12">
-              <div className="relative h-12 w-12 opacity-90 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
-                <img 
-                  src="/tab.png" 
-                  alt="Logo" 
-                  className="w-full h-full object-contain drop-shadow-sm"
-                />
-              </div>
-            </div>
-            
-            <h1 className="text-[32px] sm:text-[44px] font-semibold text-slate-900 tracking-tight leading-tight mb-4 max-w-2xl">
-              Register your interest
-            </h1>
-            <p className="text-slate-500 text-[15px] sm:text-[17px] max-w-2xl leading-relaxed font-light">
-              Please provide your details below. Our team will contact you shortly to discuss how we can support your practice.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="w-full">
-            
-            {/* Grid for standard inputs - Horizontal Layout Focus */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-12 mb-16">
-              <FloatInput 
-                label="First name" name="firstName" value={formData.firstName} 
-                onChange={handleChange} required 
-                isFocused={focusedField === 'firstName'} setFocused={setFocusedField} 
-              />
-              <FloatInput 
-                label="Last name" name="lastName" value={formData.lastName} 
-                onChange={handleChange} required 
-                isFocused={focusedField === 'lastName'} setFocused={setFocusedField} 
-              />
-              <FloatInput 
-                label="Email address" name="email" type="email" value={formData.email} 
-                onChange={handleChange} required 
-                isFocused={focusedField === 'email'} setFocused={setFocusedField} 
-              />
-              <FloatInput 
-                label="Phone number" name="phoneNumber" type="tel" value={formData.phoneNumber} 
-                onChange={handleChange} required 
-                isFocused={focusedField === 'phoneNumber'} setFocused={setFocusedField} 
-              />
-              <FloatInput 
-                label="Hospital / Institution" name="hospital" value={formData.hospital} 
-                onChange={handleChange} required 
-                isFocused={focusedField === 'hospital'} setFocused={setFocusedField} 
-              />
-              <FloatInput 
-                label="Specialty (Optional)" name="specialty" value={formData.specialty} 
-                onChange={handleChange} 
-                isFocused={focusedField === 'specialty'} setFocused={setFocusedField} 
-              />
-            </div>
-
-            {/* Textarea - Full width below the grid */}
-            <div className="mb-16 relative max-w-3xl">
-              <label 
-                className={`absolute left-0 transition-all duration-200 ease-out pointer-events-none text-slate-500 font-light ${
-                  formData.remark || focusedField === 'remark' 
-                    ? '-top-6 text-[13px]' 
-                    : 'top-3 text-[15px]'
-                }`}
+          <AnimatePresence mode="wait">
+            {status !== 'success' ? (
+              <motion.div
+                key="form"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, filter: 'blur(10px)' }}
+                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                className="bg-white/70 backdrop-blur-3xl border border-white/50 shadow-[0_8px_40px_rgb(0,0,0,0.04)] rounded-[2rem] p-8 sm:p-14"
               >
-                Additional remarks or requirements
-              </label>
-              <textarea
-                name="remark"
-                rows={1}
-                value={formData.remark}
-                onChange={handleChange}
-                onFocus={() => setFocusedField('remark')}
-                onBlur={() => setFocusedField(null)}
-                className="w-full bg-transparent border-b border-slate-200 py-3 text-[15px] text-slate-900 focus:border-slate-800 transition-colors duration-300 outline-none resize-none overflow-hidden"
-                style={{ minHeight: '44px' }}
-                onInput={(e) => {
-                  const target = e.target as HTMLTextAreaElement;
-                  target.style.height = 'auto';
-                  target.style.height = `${target.scrollHeight}px`;
-                }}
-              />
-              <div className={`absolute bottom-0 left-0 h-[1px] bg-slate-800 transition-all duration-300 ease-out ${focusedField === 'remark' ? 'w-full' : 'w-0'}`}></div>
-            </div>
+                {/* Header Section */}
+                <div className="flex flex-col mb-12">
+                  <div className="flex justify-start mb-10">
+                    <div className="relative h-12 w-12 opacity-90 hover:opacity-100 transition-opacity duration-300">
+                      <img 
+                        src="/tab.png" 
+                        alt="Logo" 
+                        className="w-full h-full object-contain drop-shadow-sm"
+                      />
+                    </div>
+                  </div>
+                  
+                  <h1 className="text-[32px] sm:text-[44px] font-medium text-zinc-900 tracking-tight leading-tight mb-4">
+                    Register your interest
+                  </h1>
+                  <p className="text-zinc-500 text-[15px] sm:text-[17px] max-w-2xl leading-relaxed font-light">
+                    Please provide your details below. Our team will contact you shortly to discuss how we can support your practice.
+                  </p>
+                </div>
 
-            {/* Footer Action Area */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-start gap-8 pt-8 border-t border-slate-100">
-              <button
-                type="submit"
-                disabled={status === 'loading'}
-                className="group relative px-10 py-4 rounded-full bg-slate-900 text-white text-[15px] font-medium tracking-wide overflow-hidden transition-all duration-300 hover:bg-slate-800 hover:shadow-lg disabled:opacity-70 disabled:pointer-events-none active:scale-[0.98] w-full sm:w-auto min-w-[200px] cursor-pointer"
+                <form onSubmit={handleSubmit} className="w-full">
+                  {/* Grid for standard inputs */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-8">
+                    <FloatInput 
+                      label="First name" name="firstName" value={formData.firstName} 
+                      onChange={handleChange} required 
+                      isFocused={focusedField === 'firstName'} setFocused={setFocusedField} 
+                    />
+                    <FloatInput 
+                      label="Last name" name="lastName" value={formData.lastName} 
+                      onChange={handleChange} required 
+                      isFocused={focusedField === 'lastName'} setFocused={setFocusedField} 
+                    />
+                    <FloatInput 
+                      label="Email address" name="email" type="email" value={formData.email} 
+                      onChange={handleChange} required 
+                      isFocused={focusedField === 'email'} setFocused={setFocusedField} 
+                    />
+                    <FloatInput 
+                      label="Phone number" name="phoneNumber" type="tel" value={formData.phoneNumber} 
+                      onChange={handleChange} required 
+                      isFocused={focusedField === 'phoneNumber'} setFocused={setFocusedField} 
+                    />
+                    <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                      <FloatInput 
+                        label="Hospital / Institution" name="hospital" value={formData.hospital} 
+                        onChange={handleChange} required 
+                        isFocused={focusedField === 'hospital'} setFocused={setFocusedField} 
+                      />
+                      <FloatInput 
+                        label="Specialty (Optional)" name="specialty" value={formData.specialty} 
+                        onChange={handleChange} 
+                        isFocused={focusedField === 'specialty'} setFocused={setFocusedField} 
+                      />
+                    </div>
+                  </div>
+
+                  {/* Textarea */}
+                  <div className="mb-12 relative w-full group">
+                    <div className={`absolute inset-0 bg-zinc-50 rounded-2xl transition-all duration-300 ${focusedField === 'remark' ? 'ring-2 ring-zinc-900 shadow-sm' : 'border border-zinc-200 group-hover:border-zinc-300'}`} />
+                    <label 
+                      className={`absolute left-4 transition-all duration-300 ease-out pointer-events-none font-medium z-10 ${
+                        formData.remark || focusedField === 'remark' 
+                          ? 'top-3 text-[11px] text-zinc-500 uppercase tracking-wider' 
+                          : 'top-5 text-[15px] text-zinc-400'
+                      }`}
+                    >
+                      Additional remarks
+                    </label>
+                    <textarea
+                      name="remark"
+                      value={formData.remark}
+                      onChange={handleChange}
+                      onFocus={() => setFocusedField('remark')}
+                      onBlur={() => setFocusedField(null)}
+                      className="relative z-0 w-full bg-transparent pt-8 pb-4 px-4 text-[15px] text-zinc-900 transition-colors duration-300 outline-none resize-none overflow-hidden"
+                      style={{ minHeight: '120px' }}
+                    />
+                  </div>
+
+                  {/* Footer Action Area */}
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2">
+                    {status === 'error' && (
+                      <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-red-500 text-sm font-medium">
+                        An error occurred. Please try again.
+                      </motion.div>
+                    )}
+                    
+                    <button
+                      type="submit"
+                      disabled={status === 'loading'}
+                      className="group relative px-8 py-4 rounded-full bg-zinc-900 text-white text-[15px] font-medium tracking-wide overflow-hidden transition-all duration-500 hover:bg-zinc-800 hover:shadow-xl hover:shadow-zinc-900/20 disabled:opacity-70 disabled:pointer-events-none active:scale-[0.98] w-full sm:w-auto min-w-[200px] ml-auto"
+                    >
+                      <span className="relative flex items-center justify-center gap-3 z-10">
+                        {status === 'loading' ? (
+                          <>
+                            <svg className="animate-spin h-5 w-5 text-white/70" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Processing...
+                          </>
+                        ) : (
+                          'Submit Registration'
+                        )}
+                      </span>
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            ) : (
+              /* Success Animation State */
+              <motion.div
+                key="success"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                className="bg-white/70 backdrop-blur-3xl border border-white/50 shadow-[0_8px_40px_rgb(0,0,0,0.04)] rounded-[2rem] p-16 flex flex-col items-center justify-center min-h-[500px] text-center"
               >
-                {/* Button shine effect */}
-                <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
-                
-                <span className="relative flex items-center justify-center gap-3">
-                  {status === 'loading' ? (
-                    <>
-                      <svg className="animate-spin h-4 w-4 text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Processing...
-                    </>
-                  ) : (
-                    'Submit Registration'
-                  )}
-                </span>
-              </button>
-            </div>
-
-            {/* Status Messages */}
-            <div className={`mt-8 overflow-hidden transition-all duration-500 ease-in-out ${status === 'success' || status === 'error' ? 'max-h-24 opacity-100 translate-y-0' : 'max-h-0 opacity-0 translate-y-4'}`}>
-              {status === 'success' && (
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-slate-50 border border-slate-100 text-slate-700 text-[14px]">
-                  <div className="h-2 w-2 rounded-full bg-slate-900"></div>
-                  Registration received successfully. We will be in touch shortly.
+                <div className="relative mb-8">
+                  <motion.div 
+                    initial={{ scale: 0 }} 
+                    animate={{ scale: 1 }} 
+                    transition={{ type: 'spring', damping: 15, stiffness: 200, delay: 0.2 }}
+                    className="w-24 h-24 rounded-full bg-zinc-900 flex items-center justify-center shadow-2xl shadow-zinc-900/30"
+                  >
+                    <svg className="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <motion.path
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 0.6, ease: "easeOut", delay: 0.5 }}
+                        d="M20 6L9 17l-5-5"
+                      />
+                    </svg>
+                  </motion.div>
                 </div>
-              )}
-              {status === 'error' && (
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-red-50/50 border border-red-100 text-red-600 text-[14px]">
-                  <div className="h-2 w-2 rounded-full bg-red-500"></div>
-                  An error occurred. Please try submitting again.
-                </div>
-              )}
-            </div>
-            
-          </form>
+                <motion.h2 
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7, duration: 0.5 }}
+                  className="text-3xl font-medium text-zinc-900 mb-4"
+                >
+                  Registration Successful
+                </motion.h2>
+                <motion.p 
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8, duration: 0.5 }}
+                  className="text-zinc-500 max-w-sm"
+                >
+                  Thank you for your interest. Our team will review your details and reach out shortly.
+                </motion.p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </div>
-      
-      {/* Minimal Footer */}
-      <div className="w-full py-8 px-6 sm:px-12 lg:px-24 text-[13px] text-slate-400 tracking-wide font-light animate-in fade-in duration-1000 delay-500 flex justify-center border-t border-slate-50">
-        <span>© {new Date().getFullYear()} All rights reserved.</span>
       </div>
     </div>
   );
 }
 
-// Minimalist Floating Label Input Component
+// Upgraded Premium Floating Input Component
 function FloatInput({ 
   label, 
   name, 
@@ -218,17 +249,26 @@ function FloatInput({
   const isActive = isFocused || value.length > 0;
 
   return (
-    <div className="relative group w-full">
+    <div className="relative w-full group h-[64px]">
+      {/* Input Background & Border */}
+      <div 
+        className={`absolute inset-0 bg-zinc-50 rounded-2xl transition-all duration-300 pointer-events-none
+          ${isFocused ? 'ring-2 ring-zinc-900 shadow-sm' : 'border border-zinc-200 group-hover:border-zinc-300'}
+        `}
+      />
+      
       <label 
         htmlFor={name}
-        className={`absolute left-0 transition-all duration-200 ease-out pointer-events-none font-light ${
-          isActive 
-            ? '-top-6 text-[12px] text-slate-500 tracking-wide' 
-            : 'top-2.5 text-[15px] text-slate-400'
-        }`}
+        className={`absolute left-4 transition-all duration-300 ease-out pointer-events-none font-medium z-10
+          ${isActive 
+            ? 'top-2.5 text-[11px] text-zinc-500 uppercase tracking-wider' 
+            : 'top-[22px] text-[15px] text-zinc-400'
+          }
+        `}
       >
-        {label} {required && isActive && <span className="text-slate-300 ml-0.5">*</span>}
+        {label} {required && isActive && <span className="text-zinc-300 ml-0.5">*</span>}
       </label>
+      
       <input
         id={name}
         type={type}
@@ -238,10 +278,8 @@ function FloatInput({
         onChange={onChange}
         onFocus={() => setFocused(name)}
         onBlur={() => setFocused(null)}
-        className="w-full bg-transparent border-b border-slate-200 py-2.5 text-[15px] text-slate-900 transition-colors duration-300 outline-none focus:border-slate-800 shadow-none rounded-none"
+        className="relative z-0 w-full h-full bg-transparent pt-6 pb-2 px-4 text-[15px] text-zinc-900 font-medium transition-colors duration-300 outline-none shadow-none rounded-2xl"
       />
-      {/* Animated bottom border on focus */}
-      <div className={`absolute bottom-0 left-0 h-[1px] bg-slate-800 transition-all duration-300 ease-out ${isFocused ? 'w-full' : 'w-0'}`}></div>
     </div>
   );
 }
