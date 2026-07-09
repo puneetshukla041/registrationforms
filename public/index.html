@@ -404,15 +404,30 @@
     submitBtn.disabled = true;
     submitBtn.textContent = 'Submitting…';
 
-    // Simulate submission. Replace with a real endpoint call as needed.
-    setTimeout(() => {
-      document.getElementById('successName').textContent = data.firstName;
-      form.classList.add('hidden');
-      successState.classList.add('show');
-    }, 500);
+    fetch('/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(result => {
+      if(result.success) {
+        document.getElementById('successName').textContent = data.firstName;
+        form.classList.add('hidden');
+        successState.classList.add('show');
+      } else {
+        alert('Something went wrong: ' + result.error);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit registration';
+      }
+    })
+    .catch(err => {
+      alert('Network error');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit registration';
+    });
   });
 
-  // clear invalid state as user types
   form.querySelectorAll('input, textarea').forEach(el => {
     el.addEventListener('input', () => {
       el.closest('.field').classList.remove('invalid');
