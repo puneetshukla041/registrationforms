@@ -2,8 +2,9 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
-export default function PhysicianIntakeForm() {
+export default function RegistrationForm() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -15,6 +16,7 @@ export default function PhysicianIntakeForm() {
   });
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -38,127 +40,211 @@ export default function PhysicianIntakeForm() {
       setFormData({
         firstName: '', lastName: '', email: '', phoneNumber: '', hospital: '', specialty: '', remark: ''
       });
+      
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => setStatus('idle'), 5000);
     } catch (error) {
       setStatus('error');
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 font-sans text-slate-800">
+    <div className="min-h-screen bg-white flex flex-col font-sans selection:bg-slate-200 selection:text-slate-900">
       
-      {/* Header */}
-      <div className="w-full max-w-3xl flex justify-between items-center mb-8">
-        <div className="flex items-center gap-2 font-bold text-xl tracking-tight">
-          <svg className="w-8 h-8 text-teal-600" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10-4.48 10-10 10S2 17.52 2 12zm10 6c3.31 0 6-2.69 6-6s-2.69-6-6-6-6 2.69-6 6 2.69 6 6 6z"/>
-          </svg>
-          SSInnovations
-        </div>
-        <span className="px-4 py-1 text-xs font-semibold tracking-wider text-slate-500 uppercase border border-slate-200 rounded-full bg-white shadow-sm">
-          Physician Intake
-        </span>
-      </div>
-
-      {/* Main Card */}
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden border border-slate-100">
+      <div className="w-full flex-grow flex items-center justify-center py-12 px-6 sm:px-12 lg:px-24">
         
-        {/* Card Header */}
-        <div className="bg-gradient-to-br from-teal-50 to-emerald-50 px-8 py-10 border-b border-slate-100 relative">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-400 to-emerald-400"></div>
-          <span className="text-teal-600 font-semibold tracking-widest text-xs uppercase mb-2 block">
-            Get in touch
-          </span>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
-            Register your interest
-          </h1>
-          <p className="text-slate-600 max-w-xl text-sm leading-relaxed">
-            Share your details and our team will reach out to discuss how SSInnovations can support your practice.
-          </p>
+        {/* Main Form Container - Full Width, Pure White */}
+        <div className="w-full max-w-[1200px] animate-in fade-in duration-700 ease-out">
+          
+          {/* Header Section */}
+          <div className="flex flex-col mb-16">
+            {/* Logo */}
+            <div className="flex justify-start mb-12">
+              <div className="relative h-12 w-12 opacity-90 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
+                <Image 
+                  src="/tab.png" 
+                  alt="Logo" 
+                  fill
+                  className="object-contain drop-shadow-sm"
+                  priority
+                />
+              </div>
+            </div>
+            
+            <h1 className="text-[32px] sm:text-[44px] font-semibold text-slate-900 tracking-tight leading-tight mb-4 max-w-2xl">
+              Register your interest
+            </h1>
+            <p className="text-slate-500 text-[15px] sm:text-[17px] max-w-2xl leading-relaxed font-light">
+              Please provide your details below. Our team will contact you shortly to discuss how we can support your practice.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="w-full">
+            
+            {/* Grid for standard inputs - Horizontal Layout Focus */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-12 mb-16">
+              <FloatInput 
+                label="First name" name="firstName" value={formData.firstName} 
+                onChange={handleChange} required 
+                isFocused={focusedField === 'firstName'} setFocused={setFocusedField} 
+              />
+              <FloatInput 
+                label="Last name" name="lastName" value={formData.lastName} 
+                onChange={handleChange} required 
+                isFocused={focusedField === 'lastName'} setFocused={setFocusedField} 
+              />
+              <FloatInput 
+                label="Email address" name="email" type="email" value={formData.email} 
+                onChange={handleChange} required 
+                isFocused={focusedField === 'email'} setFocused={setFocusedField} 
+              />
+              <FloatInput 
+                label="Phone number" name="phoneNumber" type="tel" value={formData.phoneNumber} 
+                onChange={handleChange} required 
+                isFocused={focusedField === 'phoneNumber'} setFocused={setFocusedField} 
+              />
+              <FloatInput 
+                label="Hospital / Institution" name="hospital" value={formData.hospital} 
+                onChange={handleChange} required 
+                isFocused={focusedField === 'hospital'} setFocused={setFocusedField} 
+              />
+              <FloatInput 
+                label="Specialty (Optional)" name="specialty" value={formData.specialty} 
+                onChange={handleChange} 
+                isFocused={focusedField === 'specialty'} setFocused={setFocusedField} 
+              />
+            </div>
+
+            {/* Textarea - Full width below the grid */}
+            <div className="mb-16 relative max-w-3xl">
+              <label 
+                className={`absolute left-0 transition-all duration-200 ease-out pointer-events-none text-slate-500 font-light ${
+                  formData.remark || focusedField === 'remark' 
+                    ? '-top-6 text-[13px]' 
+                    : 'top-3 text-[15px]'
+                }`}
+              >
+                Additional remarks or requirements
+              </label>
+              <textarea
+                name="remark"
+                rows={1}
+                value={formData.remark}
+                onChange={handleChange}
+                onFocus={() => setFocusedField('remark')}
+                onBlur={() => setFocusedField(null)}
+                className="w-full bg-transparent border-b border-slate-200 py-3 text-[15px] text-slate-900 focus:border-slate-800 transition-colors duration-300 outline-none resize-none overflow-hidden"
+                style={{ minHeight: '44px' }}
+                onInput={(e) => {
+                  const target = e.target as HTMLTextAreaElement;
+                  target.style.height = 'auto';
+                  target.style.height = `${target.scrollHeight}px`;
+                }}
+              />
+              <div className={`absolute bottom-0 left-0 h-[1px] bg-slate-800 transition-all duration-300 ease-out ${focusedField === 'remark' ? 'w-full' : 'w-0'}`}></div>
+            </div>
+
+            {/* Footer Action Area */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-start gap-8 pt-8 border-t border-slate-100">
+              <button
+                type="submit"
+                disabled={status === 'loading'}
+                className="group relative px-10 py-4 rounded-full bg-slate-900 text-white text-[15px] font-medium tracking-wide overflow-hidden transition-all duration-300 hover:bg-slate-800 hover:shadow-lg disabled:opacity-70 disabled:pointer-events-none active:scale-[0.98] w-full sm:w-auto min-w-[200px] cursor-pointer"
+              >
+                {/* Button shine effect */}
+                <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                
+                <span className="relative flex items-center justify-center gap-3">
+                  {status === 'loading' ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4 text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Processing...
+                    </>
+                  ) : (
+                    'Submit Registration'
+                  )}
+                </span>
+              </button>
+            </div>
+
+            {/* Status Messages */}
+            <div className={`mt-8 overflow-hidden transition-all duration-500 ease-in-out ${status === 'success' || status === 'error' ? 'max-h-24 opacity-100 translate-y-0' : 'max-h-0 opacity-0 translate-y-4'}`}>
+              {status === 'success' && (
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-slate-50 border border-slate-100 text-slate-700 text-[14px]">
+                  <div className="h-2 w-2 rounded-full bg-slate-900"></div>
+                  Registration received successfully. We will be in touch shortly.
+                </div>
+              )}
+              {status === 'error' && (
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-red-50/50 border border-red-100 text-red-600 text-[14px]">
+                  <div className="h-2 w-2 rounded-full bg-red-500"></div>
+                  An error occurred. Please try submitting again.
+                </div>
+              )}
+            </div>
+            
+          </form>
         </div>
-
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="px-8 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <InputGroup label="First name" name="firstName" placeholder="Ananya" required value={formData.firstName} onChange={handleChange} />
-            <InputGroup label="Last name" name="lastName" placeholder="Rao" required value={formData.lastName} onChange={handleChange} />
-            <InputGroup label="Email" name="email" type="email" placeholder="you@hospital.com" required value={formData.email} onChange={handleChange} />
-            <InputGroup label="Phone number" name="phoneNumber" type="tel" placeholder="+91 98765 43210" required value={formData.phoneNumber} onChange={handleChange} />
-            <InputGroup label="Hospital" name="hospital" placeholder="Hospital or institution name" required value={formData.hospital} onChange={handleChange} />
-            <InputGroup label="Specialty" name="specialty" placeholder="e.g. General Surgery" value={formData.specialty} onChange={handleChange} />
-          </div>
-
-          <div className="mb-8">
-            <label className="block text-sm font-medium text-slate-700 mb-2">Remark</label>
-            <textarea
-              name="remark"
-              rows={4}
-              placeholder="Tell us a little about what you're looking for (optional)"
-              value={formData.remark}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 ease-in-out resize-none outline-none text-slate-700 text-sm"
-            />
-          </div>
-
-          <div className="flex items-center gap-4">
-            <button
-              type="submit"
-              disabled={status === 'loading'}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-semibold text-sm shadow-md shadow-teal-500/20 hover:shadow-lg hover:shadow-teal-500/30 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-70 disabled:pointer-events-none"
-            >
-              {status === 'loading' ? 'Submitting...' : 'Submit registration'}
-            </button>
-            <span className="text-xs text-slate-400">Your information is kept confidential.</span>
-          </div>
-
-          {status === 'success' && (
-            <p className="mt-4 text-sm text-emerald-600 font-medium">Thank you! Your registration has been submitted.</p>
-          )}
-          {status === 'error' && (
-            <p className="mt-4 text-sm text-red-500 font-medium">Something went wrong. Please try again.</p>
-          )}
-        </form>
       </div>
-
-      {/* Footer */}
-      <div className="mt-12 text-xs text-slate-400">
-        © 2026 SSInnovations. All rights reserved.
+      
+      {/* Minimal Footer */}
+      <div className="w-full py-8 px-6 sm:px-12 lg:px-24 text-[13px] text-slate-400 tracking-wide font-light animate-in fade-in duration-1000 delay-500 flex justify-center border-t border-slate-50">
+        <span>© {new Date().getFullYear()} All rights reserved.</span>
       </div>
     </div>
   );
 }
 
-// Reusable Input Component
-function InputGroup({ 
+// Minimalist Floating Label Input Component
+function FloatInput({ 
   label, 
   name, 
   type = 'text', 
-  placeholder, 
-  required = false, 
   value, 
-  onChange 
+  onChange, 
+  required = false,
+  isFocused,
+  setFocused
 }: { 
   label: string; 
   name: string; 
   type?: string; 
-  placeholder: string; 
-  required?: boolean;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
+  isFocused: boolean;
+  setFocused: (name: string | null) => void;
 }) {
+  const isActive = isFocused || value.length > 0;
+
   return (
-    <div>
-      <label className="block text-sm font-medium text-slate-700 mb-2">
-        {label} {required && <span className="text-teal-500">*</span>}
+    <div className="relative group w-full">
+      <label 
+        htmlFor={name}
+        className={`absolute left-0 transition-all duration-200 ease-out pointer-events-none font-light ${
+          isActive 
+            ? '-top-6 text-[12px] text-slate-500 tracking-wide' 
+            : 'top-2.5 text-[15px] text-slate-400'
+        }`}
+      >
+        {label} {required && isActive && <span className="text-slate-300 ml-0.5">*</span>}
       </label>
       <input
+        id={name}
         type={type}
         name={name}
         required={required}
-        placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all duration-200 ease-in-out outline-none text-slate-700 text-sm"
+        onFocus={() => setFocused(name)}
+        onBlur={() => setFocused(null)}
+        className="w-full bg-transparent border-b border-slate-200 py-2.5 text-[15px] text-slate-900 transition-colors duration-300 outline-none focus:border-slate-800 shadow-none rounded-none"
       />
+      {/* Animated bottom border on focus */}
+      <div className={`absolute bottom-0 left-0 h-[1px] bg-slate-800 transition-all duration-300 ease-out ${isFocused ? 'w-full' : 'w-0'}`}></div>
     </div>
   );
 }
