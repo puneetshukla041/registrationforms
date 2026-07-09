@@ -2,7 +2,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 
 export default function RegistrationForm() {
   const [formData, setFormData] = useState({
@@ -61,12 +60,10 @@ export default function RegistrationForm() {
             {/* Logo */}
             <div className="flex justify-start mb-12">
               <div className="relative h-12 w-12 opacity-90 hover:opacity-100 transition-opacity duration-300 cursor-pointer">
-                <Image 
+                <img 
                   src="/tab.png" 
                   alt="Logo" 
-                  fill
-                  className="object-contain drop-shadow-sm"
-                  priority
+                  className="w-full h-full object-contain drop-shadow-sm"
                 />
               </div>
             </div>
